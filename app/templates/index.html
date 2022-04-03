@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка голосового образца</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="./static/style.css">
+
+</head>
+<body>
+    <div id="main">
+
+        <div id="form" class="justify-content-center flex-column" style="display: flex;margin-bottom: 1em;">
+            <h1 class="text-center">Проверить образец</h1>
+            <form id="check_file" class="d-flex flex-row align-items-center" action="" method=post enctype=multipart/form-data>
+                <label for="myfile" style="display:block;">Выбрать файл</label>
+                <input type=file name=file id="myfile" hidden>
+                <div class="name-file" style="display: inline-block;">Файл не выбран</div>
+                <div aria-hidden="true" class="drop-file d-none" style="cursor: pointer;margin-left: .5em;">&times;</div><span></span>
+                <input type=submit value=Проверить style="margin-left: 1.5em;">
+            </form>
+        </div>
+        <div class="loader mx-auto" style="display: none;margin: 1.5em">
+            <div class="inner one"></div>
+            <div class="inner two"></div>
+            <div class="inner three"></div>
+        </div>
+        <div id="stores">
+            <div id="store">
+                <p style="margin-top: 0">История</p>
+
+            </div>
+            <div id="store2">
+                <p style="margin-top: 0">Примеры</p>
+
+                {% for exmp1 in exmp %}
+<!--                    <form id action="" method=post>-->
+<!--                        <input type=text value="{{exmp1}}" name="exp" hidden>-->
+<!--                        <input type=submit value=" {{exmp1}} "  style="margin: 0.3em">-->
+<!--                    </form>-->
+                    <button style="margin: 0.3em">{{ exmp1 }}</button>
+                {% endfor %}
+            </div>
+        </div>
+<!--        {% if score %}-->
+<!--        <div>-->
+<!--            <p>Оценка системой ПС для файла составила {{ score[0] }}, то есть определен как {{ score[1] }}</p>-->
+<!--        </div>-->
+<!--        {% else %}{% endif %}-->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+
+            $('#check_file').on('submit', function(e) {
+
+                e.preventDefault();
+
+                $.post('/',
+
+
+                    $(this).serialize()
+
+                ).done(function(response) {
+                    console.log(response['status'])
+                    console.log(response['models'])
+
+                    $('#add form').trigger('reset');
+                    for (var model in response['models']) {
+                        $('table#models tbody').prepend("<tr data-inf id='" + response['models'][model]['id'] + "'>" +
+                                                              "<td>"+response['models'][model]['name']+"</td>"+
+                                                              "<td>"+response['models'][model]['number']+"</td>" +
+                                                              "<td><span class='badge badge-pill "+
+                                                              response['models'][model]['class']+" mx-1 p-2'>"+
+                                                              response['models'][model]['status']+"</span>"+
+                                                              "<span class='badge badge-pill badge-info mx-1 p-2'>"+
+                                                              "Новый</span></td>"+
+                                                              "<td>"+response['models'][model]['date']+"</td>" +
+                                                              "</tr>");
+
+                    }
+
+                }).fail(function() {
+                    console.log('Ошибка')
+                });
+
+
+            });
+
+
+            // $('form input[type="file"]').on('change', function () {
+            //     socket.emit('file', )
+            // })
+            $('form input[type="submit"]').on('click', function (){
+                $('#form').css({"display": "none"})
+                $('.loader').css({"display": "flex"})
+            })
+            $('input[type=file]').change(function(){
+                    // files = this.files;
+                $('.name-file').html(this.files[0]['name'])
+                console.log(this.files)
+                $('.drop-file').removeClass('d-none')
+            });
+            $('.drop-file').on('click', function(){
+
+                $('input[type=file]').val('')
+                $('.name-file').html('Файл не выбран')
+                $(this).addClass('d-none')
+            });
+
+
+
+        });
+    </script>
+</body>
+</html>
