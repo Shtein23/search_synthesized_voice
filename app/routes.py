@@ -1,13 +1,17 @@
 import config
-from app import app, model
+from app import app, db, model
+from app.models_db import User, History, Setting
 import os
 from flask import render_template, flash, redirect, url_for, request
 from werkzeug.utils import secure_filename
 import datetime
 import numpy as np
-from processing.MFCC import mfcc
-from processing.CQCCv2 import cqcc
-from processing.preprocessing import preprocess
+from app.processing.MFCC import mfcc
+from app.processing.CQCCv2 import cqcc
+from app.processing.preprocessing import preprocess
+from sklearn.preprocessing import MinMaxScaler
+from flask import jsonify
+
 
 
 def rd(x, y=0):
@@ -19,6 +23,7 @@ def rd(x, y=0):
     if i >= 5:
         c += 1
     return c / m
+
 
 def extract(filename, index='single'):
     sig, fs = preprocess(filename)
@@ -54,21 +59,25 @@ def extract(filename, index='single'):
     return all_coeff
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        return render_template('index.html', exmp=os.listdir('wav/example'))
+        return render_template('index.html', exmp=os.listdir('app/wav/example'))
 
     elif request.method == 'POST':
-
-        if request.form.get('exp'):
-            file = 'wav/example/'+str(request.form.get('exp'))
-            filename = str(request.form.get('exp'))
+        print(request.form.get('name_file'))
+        if request.form.get('name_file'):
+            file = 'app/wav/example/'+str(request.form.get('name_file'))
+            filename = str(request.form.get('name_file'))
+            print(file)
+            print(filename)
         else:
             file = request.files['file']
             print(type(file))
             filename = secure_filename(file.filename)
+
+
 
         tr = 0.1575779914855957
         score = model.predict(extract(file))
@@ -76,9 +85,11 @@ def index():
             score_str = 'Естественный'
         else:
             score_str = 'Спуфинг'
-        itog = [str(datetime.now()), filename, rd(score[0][0], y=2), score_str]
-
-
-        render_template('index.html', bd=bd[id], exmp=os.listdir('wav/example'))
+        # itog = [str(datetime.now()), filename, rd(score[0][0], y=2), score_str]
+        h = History(date=datetime.date.today(), file_name=filename, score=rd(score[0][0], y=2), score_str=score_str)
+        db.session.add(h)
+        db.session.commit()
+        return jsonify({'a': 'ответ'})
+        # render_template('index.html', bd=bd[id], exmp=os.listdir('wav/example'))
     else:
         return redirect('404.html', 404)

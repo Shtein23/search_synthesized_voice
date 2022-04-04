@@ -35,11 +35,7 @@
                 <p style="margin-top: 0">Примеры</p>
 
                 {% for exmp1 in exmp %}
-<!--                    <form id action="" method=post>-->
-<!--                        <input type=text value="{{exmp1}}" name="exp" hidden>-->
-<!--                        <input type=submit value=" {{exmp1}} "  style="margin: 0.3em">-->
-<!--                    </form>-->
-                    <button style="margin: 0.3em">{{ exmp1 }}</button>
+                    <button class="example_file" style="margin: 0.3em">{{ exmp1 }}</button>
                 {% endfor %}
             </div>
         </div>
@@ -53,45 +49,37 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
 
-            $('#check_file').on('submit', function(e) {
-
+            $('.example_file').on('click', function(e) {
                 e.preventDefault();
 
-                $.post('/',
+                $.post('/',{
+
+                    name_file: $(this).text()
+
+                }).done(function(res) {
+                    console.log(res['a'])
+                }).fail(function() {
+                    console.log('Ошибка')
+                });
+
+            });
+
+            $().on('submit', function(e) {
+                 e.preventDefault();
+
+                 $.post('/',
 
 
                     $(this).serialize()
 
-                ).done(function(response) {
-                    console.log(response['status'])
-                    console.log(response['models'])
-
-                    $('#add form').trigger('reset');
-                    for (var model in response['models']) {
-                        $('table#models tbody').prepend("<tr data-inf id='" + response['models'][model]['id'] + "'>" +
-                                                              "<td>"+response['models'][model]['name']+"</td>"+
-                                                              "<td>"+response['models'][model]['number']+"</td>" +
-                                                              "<td><span class='badge badge-pill "+
-                                                              response['models'][model]['class']+" mx-1 p-2'>"+
-                                                              response['models'][model]['status']+"</span>"+
-                                                              "<span class='badge badge-pill badge-info mx-1 p-2'>"+
-                                                              "Новый</span></td>"+
-                                                              "<td>"+response['models'][model]['date']+"</td>" +
-                                                              "</tr>");
-
-                    }
+                ).done(function(res) {
 
                 }).fail(function() {
                     console.log('Ошибка')
                 });
 
-
             });
 
-
-            // $('form input[type="file"]').on('change', function () {
-            //     socket.emit('file', )
-            // })
             $('form input[type="submit"]').on('click', function (){
                 $('#form').css({"display": "none"})
                 $('.loader').css({"display": "flex"})
@@ -115,3 +103,8 @@
     </script>
 </body>
 </html>
+
+<!--                    <form id action="" method=post>-->
+<!--                        <input type=text value="{{exmp1}}" name="exp" hidden>-->
+<!--                        <input type=submit value=" {{exmp1}} "  style="margin: 0.3em">-->
+<!--                    </form>-->
