@@ -5,6 +5,9 @@ from flask import render_template, flash, redirect, url_for, request
 from werkzeug.utils import secure_filename
 import datetime
 import numpy as np
+from processing.MFCC import mfcc
+from processing.CQCCv2 import cqcc
+from processing.preprocessing import preprocess
 
 
 def rd(x, y=0):
