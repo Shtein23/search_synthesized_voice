@@ -29,22 +29,25 @@
         <div id="stores">
             <div id="store">
                 <p style="margin-top: 0">История</p>
-
+                {% for record in history %}
+                    <p>
+                        Дата проверки: - {{ record.date.strftime('%d.%m.%Y') }}
+                        <br>Файл - {{ record.file_name }}
+                        <br>Оценка - {{ record.score }}, определен как
+                        <br><b>{{ record.score_str }}</b>
+                        <hr>
+                    </p>
+                {% endfor %}
             </div>
             <div id="store2">
                 <p style="margin-top: 0">Примеры</p>
-
                 {% for exmp1 in exmp %}
                     <button class="example_file" style="margin: 0.3em">{{ exmp1 }}</button>
                 {% endfor %}
             </div>
         </div>
-<!--        {% if score %}-->
-<!--        <div>-->
-<!--            <p>Оценка системой ПС для файла составила {{ score[0] }}, то есть определен как {{ score[1] }}</p>-->
-<!--        </div>-->
-<!--        {% else %}{% endif %}-->
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
@@ -58,22 +61,27 @@
 
                 }).done(function(res) {
                     console.log(res['a'])
+                    $('#store p:first').after('<p>Дата проверки: - ' + res['date'] +
+                                          '<br>Файл - ' + res['file_name'] +
+                                          '<br>Оценка - '+ res['score'] + ', определен как' +
+                                          '<br><b>' + res['score_str'] + '</b>' +
+                                          '<hr></p>')
+
                 }).fail(function() {
                     console.log('Ошибка')
                 });
 
             });
 
-            $().on('submit', function(e) {
-                 e.preventDefault();
+            $('#check_file').on('submit', function(e) {
+                e.preventDefault();
 
-                 $.post('/',
-
+                $.post('/',
 
                     $(this).serialize()
 
                 ).done(function(res) {
-
+                    console.log(res)
                 }).fail(function() {
                     console.log('Ошибка')
                 });

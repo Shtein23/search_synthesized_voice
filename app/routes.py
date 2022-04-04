@@ -63,18 +63,15 @@ def extract(filename, index='single'):
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        return render_template('index.html', exmp=os.listdir('app/wav/example'))
+        return render_template('index.html', exmp=os.listdir('app/wav/example'), history=reversed(History.query.all()))
 
     elif request.method == 'POST':
         print(request.form.get('name_file'))
         if request.form.get('name_file'):
             file = 'app/wav/example/'+str(request.form.get('name_file'))
             filename = str(request.form.get('name_file'))
-            print(file)
-            print(filename)
         else:
             file = request.files['file']
-            print(type(file))
             filename = secure_filename(file.filename)
 
 
@@ -86,10 +83,12 @@ def index():
         else:
             score_str = 'Спуфинг'
         # itog = [str(datetime.now()), filename, rd(score[0][0], y=2), score_str]
-        h = History(date=datetime.date.today(), file_name=filename, score=rd(score[0][0], y=2), score_str=score_str)
+        h = History(date=datetime.date.today(), file_name=filename, score=rd(score[0][0], y=2),
+                    score_str=score_str)
         db.session.add(h)
         db.session.commit()
-        return jsonify({'a': 'ответ'})
+        return jsonify(dict(date=datetime.date.today().strftime('%d.%m.%Y'), file_name=filename, score=rd(score[0][0], y=2),
+                            score_str=score_str))
         # render_template('index.html', bd=bd[id], exmp=os.listdir('wav/example'))
     else:
         return redirect('404.html', 404)
