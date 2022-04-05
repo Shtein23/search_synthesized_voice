@@ -73,20 +73,6 @@
 
             });
 
-            $('#check_file').on('submit', function(e) {
-                e.preventDefault();
-
-                $.post('/',
-
-                    $(this).serialize()
-
-                ).done(function(res) {
-                    console.log(res)
-                }).fail(function() {
-                    console.log('Ошибка')
-                });
-
-            });
 
             $('form input[type="submit"]').on('click', function (){
                 $('#form').css({"display": "none"})

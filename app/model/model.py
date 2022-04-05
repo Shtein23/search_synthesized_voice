@@ -59,3 +59,7 @@ def callbacks():
                    'auc': logs.get('auc')})
 
     return CustomCallback()
+
+
+def model_load(string):
+    return models.load_model(string)

@@ -13,3 +13,5 @@ class Config(object):
 
     MODEL = os.environ.get('MODEL') or 'app/model/CNNtd_v1.1'
 
+    ALLOWED_EXTENSIONS = set(['wav', 'flac'])
+
