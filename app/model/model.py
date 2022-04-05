@@ -5,7 +5,7 @@ from keras import layers
 
 def create_model():
 
-    METRICS = [
+    metrics = [
           keras.metrics.TruePositives(name='tp'),
           keras.metrics.FalsePositives(name='fp'),
           keras.metrics.TrueNegatives(name='tn'),
@@ -16,14 +16,13 @@ def create_model():
           keras.metrics.AUC(name='auc'),
     ]
 
-
     model = models.Sequential([
-        layers.Conv2D(32, (3,3), activation='relu', # (3,3) - фильтр
-                            input_shape=(32,141,1)),
-        layers.MaxPooling2D((2,2)), # фильтр (2,2) для пулинга
-        layers.Conv2D(64, (3,3), activation='relu'),
-        layers.MaxPooling2D((2,2)),
-        layers.Conv2D(64, (3,3), activation='relu'),
+        layers.Conv2D(32, (3, 3), activation='relu',         # (3,3) - фильтр
+                            input_shape=(32, 141, 1)),
+        layers.MaxPooling2D((2, 2)),                         # фильтр (2,2) для пулинга
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
         layers.Flatten(),
         layers.Dense(64, 'relu'),
         layers.Dense(32, 'relu'),
@@ -33,8 +32,9 @@ def create_model():
 
     model.compile(optimizer='adam',
                   loss='binary_crossentropy',
-                  metrics=METRICS)
+                  metrics=metrics)
     return model
+
 
 def callbacks():
 

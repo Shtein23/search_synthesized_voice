@@ -13,7 +13,6 @@ from sklearn.preprocessing import MinMaxScaler
 from flask import jsonify
 
 
-
 def rd(x, y=0):
 
     m = int('1' + '0' * y)
